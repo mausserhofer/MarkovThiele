@@ -1,4 +1,3 @@
-library(tidyr)
 library(dplyr)
 library(openxlsx)
 library(data.table)
@@ -6,8 +5,7 @@ library(ggplot2)
 
 rm(list=ls())
 setwd("C:/Users/marku/Google Drive/Aktuar_/Personenv/R")
-source("markovFunctions.R")
-source("prepareDataFunctions.R")
+
 al <- 0
 el <- 1
 #state

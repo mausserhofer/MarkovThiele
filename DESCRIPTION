@@ -1,4 +1,4 @@
-Package: MarkovThiel
+Package: MarkovThiele
 Type: Package
 Title: The package allows the user to construct and evalute markov chains
 Version: 0.1.0
