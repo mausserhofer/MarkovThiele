@@ -4,7 +4,10 @@ library(data.table)
 library(ggplot2)
 
 rm(list=ls())
-setwd("C:/Users/marku/Google Drive/Aktuar_/Personenv/R")
+setwd("C:/dev/R/MarkovThiele")
+
+source("R/prepareDataFunctions.R")
+
 
 al <- 0
 el <- 1
@@ -17,24 +20,27 @@ disc <- 1/(1+i)
 trans <- createTransition(file="sterbetafel/statAustria.xlsx", sheet="2010_2012 zusammen" )
 horizon <- max(trans$time) + 1
 #terminal condition
-# V <- createV()
+V <- createV()
 #payoff
 payoffPost <- createPayoffPost(al, horizon)
 payoffPre  <- createPayoffPre(el, horizon)
 
-# berechne verteilung
-granularity <- 0.1
-sim_min <- -granularity
-sim_max <- 11
-firstAge <- 90
-source("markovFunctions.R")
-source("forwardDist.R")
+# define class
+mc <- markovChain(trans, payoffPre, payoffPost, i=0.03, W=V)
+print(mc)
+
+mc <- completeV(mc)
+
+source("R/forwardDist.R")
+
+
 
 # exact <-
   forwardDist(u=10, state="alive", time=firstAge, trans, payoffPost, payoffPre, i)
 
 Dist <-
   completeDist(granularity, sim_min, sim_max, trans, payoffPost, payoffPre, i, state)
+
 Dist[time==firstAge & u==10]
 
 # Dist <- results[[as.character(granularity)]]

@@ -1,24 +1,31 @@
 #' @export
-completeV <- function(W, trans, payoffPost, payoffPre, i, state){
-  disc <- (1+i)^(-1)
+completeV <- function(mc){
+  trans      <- mc[["trans"]]
+  payoffPre  <- mc[["payoffPre"]]
+  payoffPost <- mc[["payoffPost"]]
+  states     <- mc[["states"]]
+  disc       <- mc[["disc"]]
+  V          <- mc[["W"]]
+
   trans[ , toTime := time + 1]
 
-  if (DQcheck(W, trans, payoffPost, payoffPre, i)=="failed") return (NULL)
-
   # 1 erstelle st?tzpunkte f?r W
-  maxTime <- max(W$time)
-  stutz <- data.table::merge(data.table::data.table(time=1:maxTime, ones=rep(1, maxTime)),
-                 data.table::data.table(state=state, ones=rep(1, length(state))),
+  maxTime <- max(V$time)
+  stutz <- data.table::merge.data.table(data.table::data.table(time=1:maxTime, ones=rep(1, maxTime)),
+                 data.table::data.table(state=states, ones=rep(1, length(states))),
                  by=("ones"), allow.cartesian = TRUE)
-  W <- data.table::merge(stutz, W, by=c("time", "state"), all.x=TRUE)
+  V <- data.table::merge.data.table(stutz, V, by=c("time", "state"), all.x=TRUE)
+  V$ones <- NULL
 
   # 2 loop through W
   for ( year in (maxTime-1):1){
-    W <- W[ time==year & is.na(v),
-            v := aPre(state, time) + disc*nextPeriod(state, time, W)]
+    V <- V[ time==year & is.na(v),
+            v := aPre(state, time) + disc[time]/disc[time+1] *nextPeriod(state, time, V)]
   }
 
-  return (W)
+
+  mc[["V"]] <- V
+  return (mc)
 }
 
 aPre <- function(selState, selTime){
@@ -27,11 +34,12 @@ aPre <- function(selState, selTime){
   if (length(foundAmount)>0) return (foundAmount)
   else return (0)
 }
+
 nextPeriod <- function(selState, selTime, W){
-  temp <- data.table::merge(trans[from==selState & time==selTime],
+  temp <- data.table::merge.data.table(trans[from==selState & time==selTime],
                 W,
                 all.x=TRUE, by.x=c("to", "toTime"), by.y=c("state", "time"))
-  temp <- data.table::merge(temp,
+  temp <- data.table::merge.data.table(temp,
                 payoffPost,
                 all.x=TRUE, by=c("from", "to", "time"))
   temp[is.na(amount), amount:=0]

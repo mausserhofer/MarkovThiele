@@ -1,4 +1,16 @@
-completeDist <- function(granularity, sim_min, sim_max, trans, payoffPost, payoffPre, i, state){
+completeDist <- function(mc){
+  trans      <- mc[["trans"]]
+  payoffPre  <- mc[["payoffPre"]]
+  payoffPost <- mc[["payoffPost"]]
+  states     <- mc[["states"]]
+  disc       <- mc[["disc"]]
+  V          <- mc[["W"]]
+  # berechne verteilung
+  granularity <- 0.1
+  sim_min <- -granularity
+  sim_max <- 11
+  firstAge <- 90
+
   disc <- (1+i)^(-1)
   upsc <- (1+i)^1
   trans[ , toTime := time + 1]
@@ -31,7 +43,7 @@ completeDist <- function(granularity, sim_min, sim_max, trans, payoffPost, payof
   Dist[is.na(postAmount), postAmount := 0]
   Dist[is.na(preAmount), preAmount   := 0]
   Dist[, u_new :=
-         roundDist((u*granularity - preAmount - postAmount)/granularity*upsc)]
+         roundDist((u*granularity - preAmount - postAmount)/granularity*upsc, sim_min, sim_max, granularity)]
   # View(Dist)
   Dist$preAmount <- Dist$postAmount <- NULL
   Result <- Dist[time==horizon,.(time, u, state)][, Prob := as.numeric(0<=u*granularity)]

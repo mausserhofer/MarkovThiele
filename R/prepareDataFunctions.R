@@ -1,26 +1,5 @@
 # horizon is the maximum age subjects can attain
 # payoffs at age horizon and later are zero
-#' @export
-createTransition <- function(file, sheet){
-  st <- read.xlsx(file,
-                  sheet=sheet,
-                  startRow = 6) %>%
-    data.table()
-  st[ , p := 1 - q]
-  horizon <- max(st$x)+1
-
-
-  trans = data.table(from=c(), to=c(), time=c(), p=c())
-  trans = rbind(trans, data.table(time=st$x,
-                                  from=rep("alive", horizon),
-                                  to=rep("dead", horizon),
-                                  p=st$q))
-  trans = rbind(trans, data.table(time=st$x,
-                                  from=rep("alive", horizon),
-                                  to=rep("alive", horizon),
-                                  p=st$p ))
-  return (trans)
-}
 
 createV <- function() {
   V <- data.table(state=c(), time=c(), v=c())
@@ -29,6 +8,7 @@ createV <- function() {
   V <- V[order(time, decreasing=TRUE)]
   return (V)
 }
+
 
 createPayoffPost <- function(al, horizon){
   max_active <- horizon - 1
@@ -48,4 +28,25 @@ createPayoffPre <- function(el, horizon) {
                                            time=1:max_active,
                                            amount=rep(el, max_active)))
   return (payoffPre)
+}
+
+createTransition <- function(file, sheet){
+  st <- read.xlsx(file,
+                  sheet=sheet,
+                  startRow = 6) %>%
+    data.table()
+  st[ , p := 1 - q]
+  horizon <- max(st$x)+1
+
+
+  trans = data.table(from=c(), to=c(), time=c(), p=c())
+  trans = rbind(trans, data.table(time=st$x,
+                                  from=rep("alive", horizon),
+                                  to=rep("dead", horizon),
+                                  p=st$q))
+  trans = rbind(trans, data.table(time=st$x,
+                                  from=rep("alive", horizon),
+                                  to=rep("alive", horizon),
+                                  p=st$p ))
+  return (trans)
 }
