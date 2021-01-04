@@ -20,13 +20,17 @@ disc <- 1/(1+i)
 trans <- createTransition(file="sterbetafel/statAustria.xlsx", sheet="2010_2012 zusammen" )
 horizon <- max(trans$time) + 1
 #terminal condition
-V <- createV()
+W <- createV()
 #payoff
 payoffPost <- createPayoffPost(al, horizon)
 payoffPre  <- createPayoffPre(el, horizon)
 
 # define class
-mc <- markovChain(trans, payoffPre, payoffPost, i=0.03, W=V)
+mc <- markovChain(trans=trans,
+                  payoffPre=payoffPre,
+                  payoffPost=payoffPost,
+                  i=0.03,
+                  W=W)
 print(mc)
 
 mc <- completeV(mc)

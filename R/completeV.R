@@ -6,6 +6,8 @@ completeV <- function(mc){
   states     <- mc[["states"]]
   disc       <- mc[["disc"]]
   V          <- mc[["W"]]
+  lastAge    <- mc[["lastAge"]]
+  firstAge   <- mc[["firstAge"]]
 
   trans[ , toTime := time + 1]
 

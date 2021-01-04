@@ -12,7 +12,6 @@ markovChain <- function(trans, payoffPre, payoffPost, i=0, W=data.table()){
     stop("payoffPre must contain columns state, time, and amount")
   if(!(dplyr::setequal(names(payoffPost), c("from", "to", "time", "amount"))))
     stop("payoffPost must contain from, to, time and amount")
-
   # check whether final conditions are ok
   if (nrow(W)>0){
     if (!(setequal(c("state", "time", "v"), names(W))))
