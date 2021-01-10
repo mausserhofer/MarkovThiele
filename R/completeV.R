@@ -1,13 +1,15 @@
+#' The function completeV creates the expected value of future cashflows
+#' for all possible states and times.
 #' @export
 completeV <- function(mc){
-  trans      <- mc[["trans"]]
-  payoffPre  <- mc[["payoffPre"]]
-  payoffPost <- mc[["payoffPost"]]
-  states     <- mc[["states"]]
-  disc       <- mc[["disc"]]
-  V          <- mc[["W"]]
-  lastAge    <- mc[["lastAge"]]
-  firstAge   <- mc[["firstAge"]]
+  trans        <- mc[["trans"]]
+  cashflowPre  <- mc[["cashflowPre"]]
+  cashflowPost <- mc[["cashflowPost"]]
+  states       <- mc[["states"]]
+  disc         <- mc[["disc"]]
+  V            <- mc[["W"]]
+  lastAge      <- mc[["lastAge"]]
+  firstAge     <- mc[["firstAge"]]
 
   trans[ , toTime := time + 1]
 
@@ -22,16 +24,14 @@ completeV <- function(mc){
   # 2 loop through W
   for ( year in (maxTime-1):1){
     V <- V[ time==year & is.na(v),
-            v := aPre(state, time) + disc[time]/disc[time+1] *nextPeriod(state, time, V)]
+            v := aPre(state, time) +
+              disc[time==year+1, pv]/disc[time==year, pv] * nextPeriod(state, time, V)]
   }
-
-
-  mc[["V"]] <- V
-  return (mc)
+  return (V)
 }
 
 aPre <- function(selState, selTime){
-  foundAmount <- unlist(payoffPre[state==selState & time==selTime, "amount"])
+  foundAmount <- unlist(cashflowPre[state==selState & time==selTime, "amount"])
   # print (foundAmount)
   if (length(foundAmount)>0) return (foundAmount)
   else return (0)
@@ -42,7 +42,7 @@ nextPeriod <- function(selState, selTime, W){
                 W,
                 all.x=TRUE, by.x=c("to", "toTime"), by.y=c("state", "time"))
   temp <- data.table::merge.data.table(temp,
-                payoffPost,
+                cashflowPost,
                 all.x=TRUE, by=c("from", "to", "time"))
   temp[is.na(amount), amount:=0]
   temp[ , v_add := p * (amount+v)]

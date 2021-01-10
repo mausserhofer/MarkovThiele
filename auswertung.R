@@ -9,8 +9,8 @@ setwd("C:/dev/R/MarkovThiele")
 source("R/prepareDataFunctions.R")
 
 
-al <- 0
-el <- 1
+al <- 100
+el <- -10
 #state
 state = c("alive", "dead")
 #interest rates
@@ -21,29 +21,32 @@ trans <- createTransition(file="sterbetafel/statAustria.xlsx", sheet="2010_2012 
 horizon <- max(trans$time) + 1
 #terminal condition
 W <- createV()
-#payoff
-payoffPost <- createPayoffPost(al, horizon)
-payoffPre  <- createPayoffPre(el, horizon)
+#cashflow
+cashflowPost <- createPayoffPost(al, horizon)
+cashflowPre  <- createPayoffPre(el, horizon)
 
 # define class
-mc <- markovChain(trans=trans,
-                  payoffPre=payoffPre,
-                  payoffPost=payoffPost,
-                  i=0.03,
-                  W=W)
+mc <- markovThieleChain(trans=trans,
+                        cashflowPre=cashflowPre,
+                        cashflowPost=cashflowPost,
+                        i=0,
+                        W=W)
 print(mc)
 
-mc <- completeV(mc)
+completeV(mc)
+dist <- completeDist(mc, granularity = 0.1)
 
+plotData <- dist[time %in% c(30) & state=="alive"]
+ggplot(data=plotData, aes(x=u, y=Prob)) + geom_line(aes(color=time))
 source("R/forwardDist.R")
 
 
 
 # exact <-
-  forwardDist(u=10, state="alive", time=firstAge, trans, payoffPost, payoffPre, i)
+  forwardDist(u=10, state="alive", time=firstAge, trans, cashflowPost, cashflowPre, i)
 
 Dist <-
-  completeDist(granularity, sim_min, sim_max, trans, payoffPost, payoffPre, i, state)
+  completeDist(granularity, sim_min, sim_max, trans, cashflowPost, cashflowPre, i, state)
 
 Dist[time==firstAge & u==10]
 

@@ -3,6 +3,7 @@ UNDER DEVELOPMENT
 # Introduction
 This package deals with cashflow processes that are describable with a discrete time markov chain and cashflows that depend on the state of underlying the markov chain. We'll call such a process a *Markov-Thiele-chain (MTC)*.
 
+
 A Markov-Thiele-chain is described by the following:
 1. permissible states  <img src="https://render.githubusercontent.com/render/math?math=s_1, s_2, s_3, ..., s_n">
 2. transition probabilities <img src="https://render.githubusercontent.com/render/math?math=P(s_i, s_j, t)">

@@ -1,17 +1,17 @@
 #' @export
-markovChain <- function(trans, payoffPre, payoffPost, i=0, W=data.table()){
+markovThieleChain <- function(trans, cashflowPre, cashflowPost, i=0, W=data.table()){
   #check whether input is of usable type
-  if (!("data.frame" %in% intersect(intersect(class(trans), class(payoffPre)),
-                                              class(payoffPost))))
+  if (!("data.frame" %in% intersect(intersect(class(trans), class(cashflowPre)),
+                                              class(cashflowPost))))
       stop("inputs must be data.frame, data.table or tibbles")
 
   # check whether input contains needed columns
   if(!(dplyr::setequal(names(trans), c("from", "to", "time", "p"))))
       stop("trans must contain columns from, to, time, and p")
-  if(!(dplyr::setequal(names(payoffPre), c("state", "time", "amount"))))
-    stop("payoffPre must contain columns state, time, and amount")
-  if(!(dplyr::setequal(names(payoffPost), c("from", "to", "time", "amount"))))
-    stop("payoffPost must contain from, to, time and amount")
+  if(!(dplyr::setequal(names(cashflowPre), c("state", "time", "amount"))))
+    stop("cashflowPre must contain columns state, time, and amount")
+  if(!(dplyr::setequal(names(cashflowPost), c("from", "to", "time", "amount"))))
+    stop("cashflowPost must contain from, to, time and amount")
   # check whether final conditions are ok
   if (nrow(W)>0){
     if (!(setequal(c("state", "time", "v"), names(W))))
@@ -30,33 +30,32 @@ markovChain <- function(trans, payoffPre, payoffPost, i=0, W=data.table()){
 
   # create discount process
   if (length(i) == 1 & is.numeric(i)){
-    v <- (1+i)^-(firstAge:lastAge)
+    v <- data.table::data.table(time=firstAge:lastAge,
+                                pv=(1+i)^-(firstAge:lastAge))
   } else{
     if (!(setequal(c("time", "pv"), names(i))))
           stop("i must be either a scalar representing a fixed interest rate or
                a table consisting of columns time and pv giving the present value of a zero bound
                at given future time")
-    v <- c()
-    for (j in 1:nrow(i))
-      v[i$time[j]] <- i$pv[j]
+    v <- merge(data.table(time=1:lastAge), i, all.x = TRUE)
   }
-  if (sum(is.na(v[firstAge:lastAge]))>0)
+  if (sum(is.na(v[time >= firstAge & time <= lastAge, pv]))>0)
     stop("present value for at least one time between first age and last age missing")
 
   # create object
   structure(list(trans=trans,
-                 payoffPre=payoffPre,
-                 payoffPost=payoffPost,
+                 cashflowPre=cashflowPre,
+                 cashflowPost=cashflowPost,
                  firstAge=firstAge,
                  lastAge=lastAge,
                  states=states,
                  disc=v,
                  W=W),
-            class = "markovChain")
+            class = "markovThieleChain")
 }
 
 #' @export
-print.markovChain <- function(mc){
+print.markovThieleChain <- function(mc){
   for (st in mc[["states"]]){
     if (st==mc[["states"]][1]) str_states <- st
     else {
@@ -70,10 +69,10 @@ print.markovChain <- function(mc){
                 " spanning from time ", mc[["firstAge"]], " to time ", mc[["lastAge"]]))
   print ("transition probabilities: ")
   print (head(mc[["trans"]]))
-  print ("payoff at beginning of period")
-  print (head(mc[["payoffPre"]]))
-  print ("payoff at end of period")
-  print (head(mc[["payoffPost"]]))
+  print ("cashflow at beginning of period")
+  print (head(mc[["cashflowPre"]]))
+  print ("cashflow at end of period")
+  print (head(mc[["cashflowPost"]]))
   print ("they interest rate term structure is")
   print (head(mc[["disc"]][mc[["firstAge"]]:mc[["lastAge"]]]))
   if (nrow(mc[["W"]]>0)) {

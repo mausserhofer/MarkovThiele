@@ -1,3 +1,8 @@
+.Rprofile
+.RProj
+.Rbuildignore
+
+/sterbetafel/*
 # History files
 .Rhistory
 .Rapp.history

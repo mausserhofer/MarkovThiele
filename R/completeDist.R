@@ -1,23 +1,27 @@
-completeDist <- function(mc){
-  trans      <- mc[["trans"]]
-  payoffPre  <- mc[["payoffPre"]]
-  payoffPost <- mc[["payoffPost"]]
-  states     <- mc[["states"]]
-  disc       <- mc[["disc"]]
-  V          <- mc[["W"]]
-  # berechne verteilung
-  granularity <- 0.1
-  sim_min <- -granularity
-  sim_max <- 11
-  firstAge <- 90
+completeDist <- function(mc, granularity = 0.1){
+  # check whether there are terminal conditions, if so, function cannot be applied
+  trans        <- mc[["trans"]]
+  cashflowPre  <- mc[["cashflowPre"]]
+  cashflowPost <- mc[["cashflowPost"]]
+  states       <- mc[["states"]]
+  disc         <- mc[["disc"]]
+  W            <- mc[["W"]]
+  firstAge     <- mc[["firstAge"]]
+  lastAge      <- mc[["lastAge"]]
 
-  disc <- (1+i)^(-1)
-  upsc <- (1+i)^1
+  if (nrow(W[v!=0])>0) stop("The Markov-Thiele-Chain uses terminal condtions.
+                      The function cannot be applied. Either change the terminal
+                      conditions to cashflows or contribute to improve this function.")
+
+  # berechne parameter f�r verteilung
+  sim_min <- cashflowPre[amount<0, sum(amount)] + cashflowPost[amount<0, sum(amount)] - granularity
+  sim_max <- cashflowPre[amount>0, sum(amount)] + cashflowPost[amount>0, sum(amount)]
+
   trans[ , toTime := time + 1]
 
   # 1 erstelle Dist
-  temp <- merge(data.table(time=1:horizon, ones=rep(1, horizon)),
-                 data.table(state=state, ones=rep(1, length(state))),
+  temp <- merge(data.table(time=1:lastAge, ones=rep(1, lastAge)),
+                 data.table(state=states, ones=rep(1, length(states))),
                  by=("ones"), allow.cartesian = TRUE)
   # konvertie richtige stutzstellen zu nummerierten
   u_min <- floor(sim_min / granularity)
@@ -28,32 +32,34 @@ completeDist <- function(mc){
                 by=("ones"), allow.cartesian=TRUE)
   Dist$ones <- NULL
 
-  # try vectorized algorithm
+  # generate data.table with all points to be evaluated and their 'successor'
   Dist <- merge(Dist, trans,
                 by.x=c("time", "state"),
                 by.y=c("time", "from"),
                 all.x = TRUE, allow.cartesian=TRUE) %>%
-    merge(payoffPre, by.x = c("time", "state"),
+    merge(cashflowPre, by.x = c("time", "state"),
           by.y=c("time", "state"), all.x = TRUE) %>%
     rename("preAmount"="amount", "toState"="to") %>%
-    merge(payoffPost, by.x=c("state", "toState", "time"),
+    merge(cashflowPost, by.x=c("state", "toState", "time"),
           by.y = c("from", "to", "time"), all.x = TRUE) %>%
     rename("postAmount"="amount")
 
   Dist[is.na(postAmount), postAmount := 0]
   Dist[is.na(preAmount), preAmount   := 0]
   Dist[, u_new :=
-         roundDist((u*granularity - preAmount - postAmount)/granularity*upsc, sim_min, sim_max, granularity)]
+         roundDist(disc[time==year, pv]/disc[time==year+1, pv]*(u*granularity - preAmount - postAmount)/granularity,
+                   sim_min, sim_max, granularity)]
   # View(Dist)
   Dist$preAmount <- Dist$postAmount <- NULL
-  Result <- Dist[time==horizon,.(time, u, state)][, Prob := as.numeric(0<=u*granularity)]
+
+  Result <- Dist[time==lastAge,.(time, u, state)][, Prob := as.numeric(0<=u*granularity)]
   # View(Result)
-  for (year in (horizon-1):firstAge){
+  for (year in (lastAge-1):firstAge){
     # möchten vektor mit Probs für die time == ursprünglicher toState
     # und time ursprünglich to Time
 
     temp <- Dist[time==year][ , index := match(concat(toState, toTime, u_new),
-                   Result[time==(year+1)][, concat(state, time, u)])]
+                                               Result[time==(year+1)][, concat(state, time, u)])]
     temp[ , Prob := Result[time==(year+1), Prob][index]]
     temp <- temp[ , Prob := sum(p * Prob), by=.(state, u, time)]
     temp[is.na(Prob), Prob := as.numeric(0<=u)]

@@ -1,7 +1,7 @@
 
 roundDist <- function(x, sim_min, sim_max, granularity){
   u_min <- floor(sim_min / granularity)
-  u_max <- floor(sim_max / granularity) + 1
+  u_max <- ceiling(sim_max / granularity)
   return (as.integer(pmin(pmax(u_min, round(x)), u_max)))
 }
 

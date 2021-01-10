@@ -3,9 +3,8 @@ Type: Package
 Title: The package allows the user to construct and evalute markov chains
 Version: 0.1.0
 Author: Markus Ausserhofer
-Description: The package defines a markov-chain-S3-object, offers functions to construct with the desired parameters and offers functions to evaluate and analyse such markov chains.
-    The user can compute the expected value of the cashflows as well as higher moments, especially variance and curtosis
-    Also the user can compute the distribution function of the markov chain using an approximation as well as evaluating the distribution function for one given u.
+Description: The package defines a Markov-Thiele-chain-S3-object, offers functions to construct and evaluate such objects.
+    The user can compute the present value of expected cashflows as well as the distribution of future cashflows.
 License: MIT
 Encoding: UTF-8
 LazyData: true
@@ -19,3 +18,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

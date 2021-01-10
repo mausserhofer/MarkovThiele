@@ -6,56 +6,73 @@
 #' @param u value for which to evalute the distribution function
 #' @param state state for which to evalute the distribution function
 #' @param time time for which to evalute the distribution function
-#' @param trans a tidy data.table containg the transition probabilities
-#' @param payoffPost a tidy data.table containing the payoff of kind post
-#' @param payoffPre a tidy data.table containing the payoff of kind pre
 #' export
-forwardDist <- function(u, state, time, trans, payoffPost, payoffPre, i){
-  upsc <- (1+i)
-  trans[ , toTime := time + 1]
+forwardDist <- function(mc, u, state, time){
+  trans        <- mc[["trans"]]
+  cashflowPre  <- mc[["cashflowPre"]]
+  cashflowPost <- mc[["cashflowPost"]]
+  states       <- mc[["states"]]
+  disc         <- mc[["disc"]]
+  W            <- mc[["W"]]
+  firstAge     <- mc[["firstAge"]]
+  lastAge      <- mc[["lastAge"]]
+
+  if (nrow(W[v!=0])>0) stop("The Markov-Thiele-Chain uses terminal condtions.
+                      The function cannot be applied. Either change the terminal
+                      conditions to cashflows or contribute to improve this function.")
+
+   trans[ , toTime := time + 1]
 
   # finde benotigte u's
-  startPoints <- data.table(u=u, state=state, time=time)
+  gridPoints <- data.table(u=u, state=state, time=time)
 
-  step <- function(points, trans, payoffPre, payoffPost, upsc){
+  step <- function(points, mc, year){
+    trans        <- mc[["trans"]]
+    cashflowPre  <- mc[["cashflowPre"]]
+    cashflowPost <- mc[["cashflowPost"]]
+    disc         <- mc[["disc"]]
+
+    #compounding
+    comp <- disc[time==year, pv]/disc[time==year+1, pv]
+
     points <- points[!is.na(state)][,.(time, state, u)]
     points <- merge(points, trans,
                   by.x=c("time", "state"),
                   by.y=c("time", "from"),
                   allow.cartesian=TRUE,
                   all.x = TRUE) %>%
-      merge(payoffPre, by.x = c("time", "state"),
+      merge(cashflowPre, by.x = c("time", "state"),
             by.y=c("time", "state"), all.x = TRUE) %>%
       rename("preAmount"="amount", "toState"="to") %>%
-      merge(payoffPost, by.x=c("state", "toState", "time"),
+      merge(cashflowPost, by.x=c("state", "toState", "time"),
             by.y = c("from", "to", "time"), all.x = TRUE) %>%
       rename("postAmount"="amount")
     points[is.na(postAmount), postAmount := 0]
     points[is.na(preAmount), preAmount   := 0]
-    points[, u_new := (u - preAmount - postAmount)*upsc]
+    points[, u_new := (u - preAmount - postAmount)*comp]
 
     dt <- points[,.(time, state, u, p, toTime, toState, u_new)]
     return (dt)
   }
 
-  gridPoints <- step(startPoints, trans, payoffPre, payoffPost, upsc)
-  # erstelle punkte pro jahr
+  #gridPoints <- step(startPoints, mc, time)
+
+  # erstelle punkte pro jahr (forward from time to lastAge)
   for (year in time:horizon){
     temp <- rename(gridPoints[time==year, .(toTime, toState, u_new)],
                    "time"="toTime", "state"="toState", "u"="u_new")
     gridPoints <- rbind(gridPoints,
-                        step(temp,
-                             trans, payoffPre, payoffPost, upsc),
+                        step(temp, mc, year),
                         fill=TRUE
     )
   }
 
-  # werte punkte von hinten aus
+  # werte punkte von hinten aus (backward from lastAge to time)
   Result <- gridPoints[toTime==horizon,.(toTime, u_new, toState)] %>%
     rename("state"="toState", "time"="toTime", "u"="u_new")
   Result[, Prob := as.numeric(0<=u)]
 
-  for (year in (horizon-1):time){
+  for (year in (lastAge-1):time){
     temp <- gridPoints[time==year][ , index := match(concat(toState, toTime, round(u_new, digits=4)),
                                                Result[time==(year+1)][, concat(state, time, round(u, digits=4))])]
     temp[ , Prob := Result[time==(year+1), Prob][index]]
