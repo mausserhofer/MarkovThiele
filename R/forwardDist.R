@@ -6,7 +6,7 @@
 #' @param u value for which to evalute the distribution function
 #' @param state state for which to evalute the distribution function
 #' @param time time for which to evalute the distribution function
-#' export
+#' @export
 forwardDist <- function(mc, u, state, time){
   trans        <- mc[["trans"]]
   cashflowPre  <- mc[["cashflowPre"]]

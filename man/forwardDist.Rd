@@ -4,7 +4,7 @@
 \alias{forwardDist}
 \title{evaluate the distribution function for one given state, timee and value}
 \usage{
-forwardDist(u, state, time, trans, payoffPost, payoffPre, i)
+forwardDist(mc, u, state, time)
 }
 \arguments{
 \item{u}{value for which to evalute the distribution function}
@@ -12,13 +12,6 @@ forwardDist(u, state, time, trans, payoffPost, payoffPre, i)
 \item{state}{state for which to evalute the distribution function}
 
 \item{time}{time for which to evalute the distribution function}
-
-\item{trans}{a tidy data.table containg the transition probabilities}
-
-\item{payoffPost}{a tidy data.table containing the payoff of kind post}
-
-\item{payoffPre}{a tidy data.table containing the payoff of kind pre
-export}
 }
 \description{
 This function constructs a tree of points that are to be stepwise
