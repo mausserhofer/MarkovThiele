@@ -1,5 +1,3 @@
-UNDER DEVELOPMENT 
-
 # Introduction
 This package deals with cashflow processes that are describable with a discrete time markov chain and cashflows that depend on the state of underlying the markov chain. We'll call such a process a *Markov-Thiele-chain (MTC)*.
 
