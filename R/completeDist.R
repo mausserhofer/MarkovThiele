@@ -14,8 +14,9 @@ completeDist <- function(mc, granularity = 0.1){
   firstAge     <- mc[["firstAge"]]
   lastAge      <- mc[["lastAge"]]
 
-  if (nrow(W[v!=0])>0) 
-    stop("The Markov-Thiele-Chain uses terminal condtions. The function cannot be applied. Either change the terminal                       conditions to cashflows or contribute to improve this function.")
+  if (nrow(W)>0)
+    if (nrow(W[v!=0])>0) 
+      stop("The Markov-Thiele-Chain uses terminal condtions. The function cannot be applied. Either change the terminal                       conditions to cashflows or contribute to improve this function.")
 
   # berechne parameter fur verteilung
   sim_min <- cashflowPre[amount<0, sum(amount)] + cashflowPost[amount<0, sum(amount)] - granularity
