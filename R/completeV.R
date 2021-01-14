@@ -14,15 +14,14 @@ completeV <- function(mc){
   trans[ , toTime := time + 1]
 
   # 1 erstelle st?tzpunkte f?r W
-  maxTime <- max(V$time)
-  stutz <- data.table::merge.data.table(data.table::data.table(time=1:maxTime, ones=rep(1, maxTime)),
+  stutz <- data.table::merge.data.table(data.table::data.table(time=firstAge:lastAge, ones=rep(1, lastAge-firstAge+1)),
                  data.table::data.table(state=states, ones=rep(1, length(states))),
                  by=("ones"), allow.cartesian = TRUE)
   V <- data.table::merge.data.table(stutz, V, by=c("time", "state"), all.x=TRUE)
   V$ones <- NULL
 
   # 2 loop through W
-  for ( year in (maxTime-1):1){
+  for ( year in (lastAge-1):firstAge){
     V <- V[ time==year & is.na(v),
             v := aPre(state, time) +
               disc[time==year+1, pv]/disc[time==year, pv] * nextPeriod(state, time, V)]
