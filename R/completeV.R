@@ -13,6 +13,12 @@ completeV <- function(mc){
 
   trans[ , toTime := time + 1]
 
+  # 0 überprüfe, ob Endbedingungen vorliegen, wenn nicht, setze diese zu lastAge = 0
+  if (nrow(V)==0) 
+    V <- data.table::data.table(state=states,
+                                time =rep(lastAge, length(states)),
+                                v    =rep(0, length(states)))
+  
   # 1 erstelle st?tzpunkte f?r W
   stutz <- data.table::merge.data.table(data.table::data.table(time=firstAge:lastAge, ones=rep(1, lastAge-firstAge+1)),
                  data.table::data.table(state=states, ones=rep(1, length(states))),
