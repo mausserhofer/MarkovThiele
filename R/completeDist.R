@@ -24,15 +24,15 @@ completeDist <- function(mc, granularity = 0.1){
   trans[ , toTime := time + 1]
 
   # 1 erstelle Dist
-  temp <- merge(data.table(time=1:lastAge, ones=rep(1, lastAge)),
-                 data.table(state=states, ones=rep(1, length(states))),
+  temp <- merge(data.table::data.table(time=1:lastAge, ones=rep(1, lastAge)),
+                 data.table::data.table(state=states, ones=rep(1, length(states))),
                  by=("ones"), allow.cartesian = TRUE)
   # konvertie richtige stutzstellen zu nummerierten
   u_min <- floor(sim_min / granularity)
   u_max <- ceiling(sim_max/granularity)
   stutz = u_min:u_max
   Dist <- merge(temp,
-                data.table(ones=rep(1,length(stutz)), u=stutz),
+                data.table::data.table(ones=rep(1,length(stutz)), u=stutz),
                 by=("ones"), allow.cartesian=TRUE)
   Dist$ones <- NULL
 

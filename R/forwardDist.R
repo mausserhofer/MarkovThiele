@@ -24,7 +24,7 @@ forwardDist <- function(mc, u, state, time){
    trans[ , toTime := time + 1]
 
   # finde benotigte u's
-  gridPoints <- data.table(u=u, state=state, time=time)
+  gridPoints <- data.table::data.table(u=u, state=state, time=time)
 
   step <- function(points, mc, year){
     trans        <- mc[["trans"]]

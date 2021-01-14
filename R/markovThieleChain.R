@@ -1,5 +1,5 @@
 #' @export
-markovThieleChain <- function(trans, cashflowPre, cashflowPost, i=0, W=data.table()){
+markovThieleChain <- function(trans, cashflowPre, cashflowPost, i=0, W=data.table::data.table()){
   #check whether input is of usable type
   if (!("data.frame" %in% intersect(intersect(class(trans), class(cashflowPre)),
                                               class(cashflowPost))))
@@ -37,7 +37,7 @@ markovThieleChain <- function(trans, cashflowPre, cashflowPost, i=0, W=data.tabl
           stop("i must be either a scalar representing a fixed interest rate or
                a table consisting of columns time and pv giving the present value of a zero bound
                at given future time")
-    v <- merge(data.table(time=1:lastAge), i, all.x = TRUE)
+    v <- merge(data.table::data.table(time=1:lastAge), i, all.x = TRUE)
   }
   if (sum(is.na(v[time >= firstAge & time <= lastAge, pv]))>0)
     stop("present value for at least one time between first age and last age missing")
