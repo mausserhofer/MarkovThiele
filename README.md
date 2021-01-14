@@ -1,3 +1,26 @@
+# Installation of package
+The package can be installed via executing the following code in R (Studio)
+
+    install.packages("devtools")
+    devtools::install_github("manalysis/MarkovThiele")
+    library(MarkovThiele)
+    
+R will then install the package devtools from cran, with which you can install the package from this site (github.com/manalysis/MarkovThiele)
+
+
+# Get started
+For a working example, you can run
+
+    mtc <- markovThieleChain(trans, cashflowPre, cashflowPost)
+
+and R will create a Markov-Thiele-Chain S3 object for an life risk insurance contract with annual premiums of 10 and payoff 100 in the event of death. Interest rates are set to 0%. You can change this with defining e.g. i=0.01 in the class constructor markovThieleChain().
+
+Once the *MTC* is constructed, you can run the available evaluation routines. 
+
+    completeV(mtc)
+    completeDist(mtc)
+    forwardDist(mtc, u=50, state="alive", time=50)
+
 # Introduction
 This package deals with cashflow processes that are describable with a discrete time markov chain and cashflows that depend on the state of underlying the markov chain. We'll call such a process a *Markov-Thiele-chain (MTC)*.
 
@@ -39,14 +62,6 @@ What people want to know about such objects are the following:
 - functions to evaluate the higher moments of MTCs
 - functionalities to evaluate a set of MTCs as in computing the present value of expected claims for a portfolio of insurance contracts
 - supply sample data for generic markov chains in the insurance sector
-
-# Installation of package
-The package can be installed via executing the following code in R
-
-    install.packages("devtools")
-    devtools::install_github("manalysis/MarkovThiele")
-    
-R will then install the package devtools from cran, with which you can install the package from this site (github.com/manalysis/MarkovThiele)
 
 # Contributions 
 Feel free to provide improvements of the code or extend functionalities. The following is a list of open TO-Dos from my point of view:
