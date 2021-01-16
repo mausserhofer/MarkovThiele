@@ -11,7 +11,7 @@ source("R/prepareDataFunctions.R")
 
 al <- 100
 el <- -4
-#state
+#states
 state = c("alive", "dead")
 #interest rates
 i = 0.01
