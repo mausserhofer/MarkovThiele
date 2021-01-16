@@ -3,9 +3,11 @@
 .Rbuildignore
 
 auswertung.R
-/renv/*
-/vignette/*
-/sterbetafel/*
+# not used folders for R package
+renv/*
+vignette/*
+sterbetafel/*
+
 # History files
 .Rhistory
 .Rapp.history
