@@ -2,6 +2,9 @@
 .RProj
 .Rbuildignore
 
+auswertung.R
+/renv/*
+/vignette/*
 /sterbetafel/*
 # History files
 .Rhistory
