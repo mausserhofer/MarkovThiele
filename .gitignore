@@ -2,7 +2,7 @@
 .RProj
 .Rbuildignore
 
-auswertung.R
+R/auswertung.R
 # not used folders for R package
 renv/*
 vignette/*
