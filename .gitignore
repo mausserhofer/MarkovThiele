@@ -3,6 +3,8 @@
 .Rbuildignore
 
 R/auswertung.R
+R/prepareDataFunctions.R
+
 # not used folders for R package
 renv/*
 vignette/*
