@@ -2,7 +2,7 @@
 The package can be installed via executing the following code in R (Studio)
 
     install.packages("devtools")
-    devtools::install_github("manalysis/MarkovThiele")
+    devtools::install_github("mausserhofer/MarkovThiele")
     library(MarkovThiele)
     
 R will then install the package devtools from cran, with which you can install the package from this site (github.com/manalysis/MarkovThiele)
