@@ -61,10 +61,8 @@ What people want to know about such objects are the following:
 # Further goals of this package
 - functions to evaluate the higher moments of MTCs
 - functionalities to evaluate a set of MTCs as in computing the present value of expected claims for a portfolio of insurance contracts
-- supply sample data for generic markov chains in the insurance sector
+- functionalitites to track different types of cashflows such as premiums, benefits and costs and allow for separate evaluation
+- further improve performance, e.g. supplement merge-routines with match routines
 
 # Contributions 
-Feel free to provide improvements of the code or extend functionalities. The following is a list of open TO-Dos from my point of view:
-- define an function to check the validity of a defined markov chain
-- create a function that computes the higher moments
-- find a set-up to include homogeneous markov chains
+Feel free to provide improvements of the code, extend functionalities or just reach out to me via [email](mailto:markus.ausserhofer@hotmail.com)
