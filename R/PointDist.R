@@ -7,7 +7,7 @@
 #' @param state state for which to evalute the distribution function
 #' @param time time for which to evalute the distribution function
 #' @export
-forwardDist <- function(mc, u, state, time){
+PointDist <- function(mc, u, state, time){
   trans        <- mc[["trans"]]
   cashflowPre  <- mc[["cashflowPre"]]
   cashflowPost <- mc[["cashflowPost"]]

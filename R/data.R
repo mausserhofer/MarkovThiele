@@ -11,7 +11,7 @@
 "cashflowPost"
 
 #' Example data for a livelong life risk insurance contract
-#' with premium 10 to be paid when the policy holder is alive
+#' with premium 4 to be paid when the policy holder is alive
 #' 
 #' @format A data.table with columns time, state, amount:
 #' \describe{

@@ -10,7 +10,7 @@ source("R/prepareDataFunctions.R")
 
 
 al <- 100
-el <- -10
+el <- -4
 #state
 state = c("alive", "dead")
 #interest rates

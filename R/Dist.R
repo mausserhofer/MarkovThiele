@@ -3,7 +3,7 @@
 #' @param granularity indicates the amount of precision to be used in the distribution
 #'
 #' @export
-completeDist <- function(mc, granularity = 0.1){
+Dist <- function(mc, granularity = 0.1){
   # check whether there are terminal conditions, if so, function cannot be applied
   trans        <- mc[["trans"]]
   cashflowPre  <- mc[["cashflowPre"]]

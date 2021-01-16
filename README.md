@@ -13,7 +13,7 @@ For a working example, you can run
 
     mtc <- markovThieleChain(trans, cashflowPre, cashflowPost)
 
-and R will create a Markov-Thiele-Chain S3 object for an life risk insurance contract with annual premiums of 10 and payoff 100 in the event of death. Interest rates are set to 0%. You can change this with defining e.g. i=0.01 in the class constructor markovThieleChain().
+and R will create a Markov-Thiele-Chain S3 object for an life risk insurance contract with annual premiums of 4 and payoff 100 in the event of death. Interest rates are set to 0%. You can change this with defining e.g. i=0.01 in the class constructor markovThieleChain().
 
 Once the *MTC* is constructed, you can run the available evaluation routines. 
 
@@ -52,10 +52,10 @@ What people want to know about such objects are the following:
 
 # Usage of package
 
-- a markoThieleChain can be generated with invoking markovThieleChain with admissible parameters. The interest rate term structure can be defined with one number, being the annual interest. States that do not possess outgoing probabilities, i.e. a state *s_1* where for time *t* there exist no transition probabilites P(s_1, s_j, t) for any state *s_j*, are assumed to be terminal states, i.e. the MTC ends if such a state is reached and no further cashflows occur.
-- the present value for all times and all states can be computed with the function 'completeV'
-- the distribution of a MTC can be calculated with the function 'completeDist', this is using approximations. For getting more exact results, increase the parameter 'granularity'.
-- the probability that the present value of future cashflows is smaller or equal to a value *u* can be computed with the function forwardDist. This function is not using any approximations, however the output is just the probability for this one state, time and *u*. This function can be used to check whether the granularity used in completeDist is sufficiently small.
+- a markoThieleChain can be generated with invoking **markovThieleChain** with admissible parameters. The interest rate term structure can be defined with one number, being the annual interest. States that do not possess outgoing probabilities, i.e. a state *s_1* where for time *t* there exist no transition probabilites *P(s_1, s_j, t)* for any state *s_j*, are assumed to be terminal states, i.e. the MTC ends if such a state is reached and no further cashflows occur.
+- the present value of expected future cashflows for all times and all states can be computed with the function **EPV**
+- the distribution of a MTC can be calculated with the function **Dist**, this is using approximations due to necessary discretisation. For getting more exact results, increase the parameter *granularity*.
+- the probability that the present value of future cashflows is smaller or equal to a value *u* can be computed with the function PointDist. This function is not using any approximations, however the output is just the probability for this one state, time and *u*. This function can be used to check whether the granularity used in **PointDist** is sufficiently small.
 
 
 # Further goals of this package
