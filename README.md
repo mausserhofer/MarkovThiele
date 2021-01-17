@@ -63,6 +63,7 @@ What people want to know about such objects are the following:
 - functionalities to evaluate a set of MTCs as in computing the present value of expected claims for a portfolio of insurance contracts
 - functionalitites to track different types of cashflows such as premiums, benefits and costs and allow for separate evaluation
 - further improve performance, e.g. supplement merge-routines with match routines
+- improve the heuristics in function **Dist** that determines the maximal and minimal values of *u*
 
 # Contributions 
 Feel free to provide improvements of the code, extend functionalities or just reach out to me via [email](mailto:markus.ausserhofer@hotmail.com)

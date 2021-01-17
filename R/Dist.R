@@ -18,7 +18,7 @@ Dist <- function(mc, granularity = 0.1){
     if (nrow(W[v!=0])>0) 
       stop("The Markov-Thiele-Chain uses terminal condtions. The function cannot be applied. Either change the terminal                       conditions to cashflows or contribute to improve this function.")
 
-  # berechne parameter fur verteilung
+  # heuristics for maximal and minimal values of u - To-Do: to be improved
   sim_min <- cashflowPre[amount<0, sum(amount)] + cashflowPost[amount<0, sum(amount)] - granularity
   sim_max <- cashflowPre[amount>0, sum(amount)] + cashflowPost[amount>0, sum(amount)]
 
@@ -51,12 +51,15 @@ Dist <- function(mc, granularity = 0.1){
 
   Dist[is.na(postAmount), postAmount := 0]
   Dist[is.na(preAmount), preAmount   := 0]
+  Dist[ ,year := time]
+  Dist[year<lastAge , 
+       comp := disc[,pv][match(year, disc$time)] / disc[,pv][match(year+1, disc$time)]]
   Dist[, u_new :=
-         roundDist(disc[time==year, pv]/disc[time==year+1, pv]*(u*granularity - preAmount - postAmount)/granularity,
+         roundDist(comp*(u*granularity - preAmount - postAmount)/granularity,
                    sim_min, sim_max, granularity)]
   # View(Dist)
-  Dist$preAmount <- Dist$postAmount <- NULL
-
+  Dist$preAmount <- Dist$postAmount <- Dist$year <- NULL
+  
   Result <- Dist[time==lastAge,.(time, u, state)][, Prob := as.numeric(0<=u*granularity)]
   # View(Result)
   for (year in (lastAge-1):firstAge){
